@@ -44,6 +44,7 @@ def makePDF(font):
         file.write('\\renewcommand{\\baselinestretch}{1.8}\n')
         file.write('\n')
         file.write('\\begin{document}\n')
+        file.write('\\pagestyle{empty}\n')
         file.write(data + '\n')
         file.write('\\end{document}\n')
 
@@ -56,7 +57,7 @@ def makePDF(font):
             output.write(text_new)
 
     for f in font:  
-        x = subprocess.call('lualatex --output-directory=/home/'+id+'/Desktop/MP/font/ /home/'+id+'/Desktop/MP/font/font_'+ font[f] +'.tex', shell = True)
+        x = subprocess.call('buf_size=2000000000 lualatex --output-directory=/home/'+id+'/Desktop/MP/font/ /home/'+id+'/Desktop/MP/font/font_'+ font[f] +'.tex', shell = True)
         if x != 0:
             print('Exit-code not 0, check result!')
 
@@ -80,7 +81,10 @@ def kraken(font):
         pdir = os.path.join(path, dir)
         for d in os.listdir(pdir):
 
-            x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.75', shell = True)
+            if font[f] == 'Sylexiad':
+                x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.90', shell = True)
+            else:
+                x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.75', shell = True)
             if x != 0:
                 print('Exit-code not 0, check result!')
                 
@@ -143,7 +147,6 @@ def generateGT(font):
                     for el in element:
                         if isinstance(el, LTTextLine):
                             line.append(el.get_text())
-            line.pop()
 
             for l in range(len(line)): 
                 with open(pdir + '/font_'+ font[f] + str(count) + '_seg' + str(l) + '.gt.txt', 'w', encoding = 'utf8') as file:
@@ -156,19 +159,10 @@ def generateGT(font):
 if __name__ == "__main__":
     #font usati 
     font = {
-        'Open Dyslexic' : 'OpenDyslexic', 
-        'Sylexiad Sans Medium' : 'Sylexiad',
-        'Lexie Readable' : 'LexieReadable',
-        'Arial' : 'Arial',
-        'Tahoma' : 'Tahoma',
-        'Verdana' : 'Verdana',
-        'Comic Sans Ms' : 'ComicSansMs',
-        'Baskervville' : 'Baskervville',
-        'Times New Roman' : 'TimesNewRoman',
-        'Georgia' : 'Georgia'
+        'Sylexiad Sans Medium' : 'Sylexiad'
         }
     
     getText()
-    #makePDF(font)
-    #kraken(font)
-    #generateGT(font)
+    makePDF(font)
+    kraken(font)
+    generateGT(font)
