@@ -110,7 +110,7 @@ def generateGT(font):
         document = open('/home/lisa/Desktop/MP/font/font_'+ font[f] +'.pdf','rb')
         rsrcmgr = PDFResourceManager()
         # Set parameters for analysis.
-        laparams = LAParams()
+        laparams = LAParams(char_margin=3.0)
         # Create a PDF page aggregator object.
         device = PDFPageAggregator(rsrcmgr, laparams=laparams)
         interpreter = PDFPageInterpreter(rsrcmgr, device)
