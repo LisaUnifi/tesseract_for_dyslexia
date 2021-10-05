@@ -4,14 +4,15 @@ import jellyfish
 import numpy as np
 import matplotlib.pyplot as plt 
 
+id = 'lisa'
 
 def distance(str1, str2):
     d = jellyfish.levenshtein_distance(str1, str2)
     return d
 
 def comparison(font):
-    pdist = os.path.join('/home/lisa/Desktop/MP/distorsion/results', font)
-    pgt = os.path.join('/home/lisa/Desktop/MP/distorsion/gt', font)
+    pdist = os.path.join('/home/'+id+'/Desktop/MP/distorsion/results', font)
+    pgt = os.path.join('/home/'+id+'/Desktop/MP/distorsion/gt', font)
 
     with open(pdist + '/data.csv', mode = 'w') as cfile:
         fileWriter = csv.writer(cfile, delimiter = ',')
@@ -55,9 +56,9 @@ def comparison(font):
                         cfile.close()
 
 def noDistEval(font):
-    path = os.path.join('/home/lisa/Desktop/MP/distorsion/results', font)
-    pdist = os.path.join('/home/lisa/Desktop/MP/distorsion/normal', font)
-    pgt = os.path.join('/home/lisa/Desktop/MP/distorsion/gt', font)
+    path = os.path.join('/home/'+id+'/Desktop/MP/distorsion/results', font)
+    pdist = os.path.join('/home/'+id+'/Desktop/MP/distorsion/normal', font)
+    pgt = os.path.join('/home/'+id+'/Desktop/MP/distorsion/gt', font)
     
     sum = 0
     count = 0
@@ -85,7 +86,7 @@ def noDistEval(font):
         cfile.close()
 
 def barAverages(font, distortion):
-    path = '/home/lisa/Desktop/MP/distorsion/results'
+    path = '/home/'+id+'/Desktop/MP/distorsion/results'
     data = {}
     listfont = []
     listpar = []
