@@ -3,12 +3,30 @@ from pdf2image import convert_from_path
 import subprocess, os
 from PIL import Image
 import json
+import PyPDF2
 from pdfminer.layout import LAParams
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LTTextBox, LTTextLine
 
+def createTxt():
+    pdffileobj = open('/home/' + id + '/Desktop/MP/text/TheultimateHitchhikersGuide.pdf','rb')
+    pdfreader = PyPDF2.PdfFileReader(pdffileobj)
+
+    x = 170
+    pageobj = pdfreader.getPage(x+1)
+    
+    text = pageobj.extractText()
+    
+    #save the extracted data from pdf to a txt file
+    #we will use file handling here
+    #dont forget to put r before you put the file path
+    #go to the file location copy the path by right clicking on the file
+    #click properties and copy the location path and paste it here.
+    #put "\\your_txtfilename"
+    file1 = open('/home/' + id + '/Desktop/MP/text/1.txt',"a")
+    file1.writelines(text)
 
 
 #Get a text and remove "end of line" character
@@ -156,7 +174,8 @@ if __name__ == "__main__":
         'Georgia' : 'Georgia'
         }
     
+    createTxt()
     #getText()
     #makePDF(font)
     #kraken(font)
-    generateGT(font)
+    #generateGT(font)
