@@ -10,6 +10,7 @@ from pdfminer.pdfpage import PDFPage
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LTTextBox, LTTextLine
 
+<<<<<<< HEAD
 def createTxt():
     pdffileobj = open('/home/' + id + '/Desktop/MP/text/TheultimateHitchhikersGuide.pdf','rb')
     pdfreader = PyPDF2.PdfFileReader(pdffileobj)
@@ -28,21 +29,24 @@ def createTxt():
     file1 = open('/home/' + id + '/Desktop/MP/text/1.txt',"a")
     file1.writelines(text)
 
+=======
+id = 'lisa'
+>>>>>>> main
 
 #Get a text and remove "end of line" character
 def getText():
-    with open('/home/lisa/Desktop/MP/text/text-spazi.txt', 'r') as fin, open('/home/lisa/Desktop/MP/text/text.txt', 'w+') as fout:
+    with open('/home/'+id+'/Desktop/MP/text/text-spazi.txt', 'r') as fin, open('/home/lisa/Desktop/MP/text/text.txt', 'w+') as fout:
         lines = fin.readlines()
         cleaned = [line.strip() for line in lines]
         joined = ' '.join(cleaned)
         fout.write(joined)
 
 def makePDF(font):
-    with open('/home/lisa/Desktop/MP/text/text.txt','r', encoding = 'utf8') as txt:
+    with open('/home/'+id+'/Desktop/MP/text/text.txt','r', encoding = 'utf8') as txt:
         data = txt.read()
 
     #Use "fontspec" to generate file with differnt fonts
-    with open('/home/lisa/Desktop/MP/font/fontcreator.tex','w', encoding = 'utf8') as file:
+    with open('/home/'+id+'/Desktop/MP/font/fontcreator.tex','w', encoding = 'utf8') as file:
         file.write('\\documentclass{report}\n')
         file.write('\\usepackage{fontspec}\n')
         file.write('\\usepackage[margin=0.5in]{geometry}\n')
@@ -54,28 +58,28 @@ def makePDF(font):
         file.write('\\end{document}\n')
 
     for f in font:    
-        with open('/home/lisa/Desktop/MP/font/fontcreator.tex','r') as myfile:
+        with open('/home/'+id+'/Desktop/MP/font/fontcreator.tex','r') as myfile:
             text = myfile.read()
             text_new = text.replace('var', f)
 
-        with open('/home/lisa/Desktop/MP/font/font_'+ font[f] +'.tex', 'w') as output:
+        with open('/home/'+id+'/Desktop/MP/font/font_'+ font[f] +'.tex', 'w') as output:
             output.write(text_new)
 
     for f in font:  
-        x = subprocess.call('lualatex --output-directory=/home/lisa/Desktop/MP/font/ /home/lisa/Desktop/MP/font/font_'+ font[f] +'.tex', shell = True)
+        x = subprocess.call('lualatex --output-directory=/home/'+id+'/Desktop/MP/font/ /home/'+id+'/Desktop/MP/font/font_'+ font[f] +'.tex', shell = True)
         if x != 0:
             print('Exit-code not 0, check result!')
 
 #Create single line text images
 def kraken(font):
-    path = '/home/lisa/Desktop/MP/image/'
+    path = '/home/'+id+'/Desktop/MP/image/'
 
     #convertire pdf in tif
     for f in font:
         directory = font[f]
         pdir = os.path.join(path, directory)
         os.mkdir(pdir)
-        image = convert_from_path('/home/lisa/Desktop/MP/font/font_'+ font[f] +'.pdf') 
+        image = convert_from_path('/home/'+id+'/Desktop/MP/font/font_'+ font[f] +'.pdf') 
         count = 1
         for i in image:
             i.save(pdir + '/font_'+ font[f] + str(count) + '.tif')
@@ -96,7 +100,7 @@ def kraken(font):
                 print('Exit-code not 0, check result!')
 
     #divisione in segmenti
-    path2 = '/home/lisa/Desktop/MP/data/'
+    path2 = '/home/'+id+'/Desktop/MP/data/'
     for f in font:
         directory = font[f]
         pdir = os.path.join(path2, directory)
@@ -125,7 +129,7 @@ def kraken(font):
 #Generate ground truth from PDFs 
 def generateGT(font):
     for f in font:
-        document = open('/home/lisa/Desktop/MP/font/font_'+ font[f] +'.pdf','rb')
+        document = open('/home/'+id+'/Desktop/MP/font/font_'+ font[f] +'.pdf','rb')
         rsrcmgr = PDFResourceManager()
         # Set parameters for analysis.
         laparams = LAParams(char_margin=3.0)
@@ -133,7 +137,7 @@ def generateGT(font):
         device = PDFPageAggregator(rsrcmgr, laparams=laparams)
         interpreter = PDFPageInterpreter(rsrcmgr, device)
 
-        path = '/home/lisa/Desktop/MP/gt/'
+        path = '/home/'+id+'/Desktop/MP/gt/'
         directory = font[f]
         pdir = os.path.join(path, directory)
         os.mkdir(pdir)

@@ -10,10 +10,11 @@ from PIL import Image
 import json
 import cv2 #OpenCV
 
+id = 'lisa'
 
 def generatePDF(font):
     #generate fontcreator.tex 
-    with open('/home/lisa/Desktop/MP/distorsion/font/fontcreator.tex','w', encoding = 'utf8') as file:
+    with open('/home/'+id+'/Desktop/MP/distorsion/font/fontcreator.tex','w', encoding = 'utf8') as file:
         file.write('\\documentclass{report}\n')
         file.write('\\usepackage[english]{babel}\n')
         file.write('\\usepackage{blindtext}\n')
@@ -30,27 +31,27 @@ def generatePDF(font):
 
     #generate .tex with selected font
     for f in font:    
-        with open('/home/lisa/Desktop/MP/distorsion/font/fontcreator.tex','r') as myfile:
+        with open('/home/'+id+'/Desktop/MP/distorsion/font/fontcreator.tex','r') as myfile:
             text = myfile.read()
             text_new = text.replace('var', f)
 
-        with open('/home/lisa/Desktop/MP/distorsion/font/font_'+ font[f] +'.tex', 'w') as output:
+        with open('/home/'+id+'/Desktop/MP/distorsion/font/font_'+ font[f] +'.tex', 'w') as output:
             output.write(text_new)
 
     #generete .pdf with selected font
     for f in font:  
-        x = subprocess.call('lualatex --output-directory=/home/lisa/Desktop/MP/distorsion/font /home/lisa/Desktop/MP/distorsion/font/font_'+ font[f] +'.tex', shell =True)
+        x = subprocess.call('lualatex --output-directory=/home/'+id+'/Desktop/MP/distorsion/font /home/'+id+'/Desktop/MP/distorsion/font/font_'+ font[f] +'.tex', shell =True)
         if x != 0:
             print('Exit-code not 0, check result!')
 
 def binarizationAndSegmentation(font):
-    path = '/home/lisa/Desktop/MP/distorsion/image/'
+    path = '/home/'+id+'/Desktop/MP/distorsion/image/'
     for f in font:
         directory = font[f]
         pdir = os.path.join(path, directory)
         if not os.path.isdir(pdir):
             os.mkdir(pdir)
-        image = convert_from_path('/home/lisa/Desktop/MP/distorsion/font/font_'+ font[f] +'.pdf') 
+        image = convert_from_path('/home/'+id+'/Desktop/MP/distorsion/font/font_'+ font[f] +'.pdf') 
         count = 1
         for i in image:
             i.save(pdir + '/font_'+ font[f] + str(count) + '.tif')
@@ -69,7 +70,7 @@ def binarizationAndSegmentation(font):
             if y != 0:
                 print('Exit-code not 0, check result!')
 
-    path2 = '/home/lisa/Desktop/MP/distorsion/data/'
+    path2 = '/home/'+id+'/Desktop/MP/distorsion/data/'
     for f in font:
         directory = font[f]
         pdir = os.path.join(path2, directory)
@@ -98,7 +99,7 @@ def binarizationAndSegmentation(font):
         
 def generateGT(font):        
     for f in font:
-        document = open('/home/lisa/Desktop/MP/distorsion/font/font_'+ font[f] +'.pdf','rb')
+        document = open('/home/'+id+'/Desktop/MP/distorsion/font/font_'+ font[f] +'.pdf','rb')
         rsrcmgr = PDFResourceManager()
         # Set parameters for analysis.
         laparams = LAParams()
@@ -106,7 +107,7 @@ def generateGT(font):
         device = PDFPageAggregator(rsrcmgr, laparams=laparams)
         interpreter = PDFPageInterpreter(rsrcmgr, device)
 
-        path = '/home/lisa/Desktop/MP/distorsion/gt/'
+        path = '/home/'+id+'/Desktop/MP/distorsion/gt/'
         directory = font[f]
         pdir = os.path.join(path, directory)
         os.mkdir(pdir)
@@ -131,8 +132,8 @@ def generateGT(font):
             count = count + 1
 
 def blurred(font, parameter):
-    pdata = '/home/lisa/Desktop/MP/distorsion/data/'
-    pblur = '/home/lisa/Desktop/MP/distorsion/blurring/'
+    pdata = '/home/'+id+'/Desktop/MP/distorsion/data/'
+    pblur = '/home/'+id+'/Desktop/MP/distorsion/blurring/'
     for f in font:
         directory = font[f]
         pdir = os.path.join(pdata, directory)
@@ -149,8 +150,8 @@ def blurred(font, parameter):
             cv2.imwrite(pout + '/' + name + '.tif', blurred)
         
 def superimposition(font, parameter):  
-    pdata = '/home/lisa/Desktop/MP/distorsion/data/'
-    psup = '/home/lisa/Desktop/MP/distorsion/superimposition/'
+    pdata = '/home/'+id+'/Desktop/MP/distorsion/data/'
+    psup = '/home/'+id+'/Desktop/MP/distorsion/superimposition/'
     for f in font:
         directory = font[f]
         pdir = os.path.join(pdata, directory)
@@ -217,8 +218,8 @@ def makeSlant(img, sl):
         return s
 
 def slant(font, parameter):
-    pdata = '/home/lisa/Desktop/MP/distorsion/data/'
-    pslant = '/home/lisa/Desktop/MP/distorsion/slant'
+    pdata = '/home/'+id+'/Desktop/MP/distorsion/data/'
+    pslant = '/home/'+id+'/Desktop/MP/distorsion/slant'
     for f in font:
         directory = font[f]
         pdir = os.path.join(pdata, directory)
@@ -236,7 +237,7 @@ def slant(font, parameter):
 
 def renameGT(font):
     for f in font: 
-        path = os.path.join('/home/lisa/Desktop/MP/distorsion/gt', font[f])
+        path = os.path.join('/home/'+id+'/Desktop/MP/distorsion/gt', font[f])
         for file in os.listdir(path):
             old = os.path.join(path, file)
             new = old.replace('.gt.txt', '.txt')

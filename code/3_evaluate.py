@@ -1,10 +1,11 @@
 import subprocess, os
 
+id = 'lisa'
 
 #OCR read distortion with different parameters for each font and create a .txt file
 def evaluate(font, distortion):
-    pin = os.path.join('/home/lisa/Desktop/MP/distorsion', distortion)
-    path = '/home/lisa/Desktop/MP/distorsion/results'
+    pin = os.path.join('/home/'+id+'/Desktop/MP/distorsion', distortion)
+    path = '/home/'+id+'/Desktop/MP/distorsion/results'
     for f in font:
         pdir = os.path.join(pin, f)
         pout = os.path.join(path, f)
@@ -26,8 +27,8 @@ def evaluate(font, distortion):
                         print('Exit-code not 0, check result!')
 
 def evaluateNoDist(font):
-    pin = '/home/lisa/Desktop/MP/distorsion/data'
-    path = '/home/lisa/Desktop/MP/distorsion/normal'
+    pin = '/home/'+id+'/Desktop/MP/distorsion/data'
+    path = '/home/'+id+'/Desktop/MP/distorsion/normal'
     for f in font:
         pdir = os.path.join(pin, f)
         pout = os.path.join(path, f)
@@ -77,7 +78,7 @@ if __name__ == "__main__":
     for d in distortion:
         evaluate(font, d)
 
-    path = '/home/lisa/Desktop/MP/distorsion/results'
+    path = '/home/'+id+'/Desktop/MP/distorsion/results'
     for fold in os.listdir(path):
         path2 = os.path.join(path,fold)
         for fold2 in os.listdir(path2):
@@ -88,7 +89,7 @@ if __name__ == "__main__":
 
     evaluateNoDist(font)
 
-    path = '/home/lisa/Desktop/MP/distorsion/normal'
+    path = '/home/'+id+'/Desktop/MP/distorsion/normal'
     for fold in os.listdir(path):
         path2 = os.path.join(path,fold)
         eraseLS(path2)
