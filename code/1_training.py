@@ -1,5 +1,4 @@
 import subprocess, os
-from io import StringIO
 from pdf2image import convert_from_path
 import subprocess, os
 from PIL import Image
@@ -7,10 +6,8 @@ import json
 from pdfminer.layout import LAParams
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
-from pdfminer.converter import PDFPageAggregator, TextConverter
+from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LTTextBox, LTTextLine
-from pdfminer.pdfdocument import PDFDocument
-from pdfminer.pdfparser import PDFParser
 
 id = 'lisa'
 
