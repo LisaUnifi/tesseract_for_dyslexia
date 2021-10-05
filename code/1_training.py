@@ -1,42 +1,38 @@
 import subprocess, os
+from io import StringIO
 from pdf2image import convert_from_path
 import subprocess, os
 from PIL import Image
 import json
-import PyPDF2
 from pdfminer.layout import LAParams
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
-from pdfminer.converter import PDFPageAggregator
+from pdfminer.converter import PDFPageAggregator, TextConverter
 from pdfminer.layout import LTTextBox, LTTextLine
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfparser import PDFParser
 
 id = 'lisa'
 
-def createTxt():
-    pdffileobj = open('/home/' + id + '/Desktop/MP/text/TheultimateHitchhikersGuide.pdf','rb')
-    pdfreader = PyPDF2.PdfFileReader(pdffileobj)
-
-    x = 170
-    pageobj = pdfreader.getPage(x+1)
-    
-    text = pageobj.extractText()
-    
-    #save the extracted data from pdf to a txt file
-    #we will use file handling here
-    #dont forget to put r before you put the file path
-    #go to the file location copy the path by right clicking on the file
-    #click properties and copy the location path and paste it here.
-    #put "\\your_txtfilename"
-    file1 = open('/home/' + id + '/Desktop/MP/text/1.txt',"a")
-    file1.writelines(text)
-
 #Get a text and remove "end of line" character
 def getText():
-    with open('/home/'+id+'/Desktop/MP/text/text-spazi.txt', 'r') as fin, open('/home/lisa/Desktop/MP/text/text.txt', 'w+') as fout:
+    with open('/home/'+ id +'/Desktop/MP/text/text-spazi.txt', 'r') as fin, open('/home/lisa/Desktop/MP/text/text.txt', 'w+') as fout:
         lines = fin.readlines()
-        cleaned = [line.strip() for line in lines]
+        cleaned = [' '.join(line.strip().split()) for line in lines]
         joined = ' '.join(cleaned)
         fout.write(joined)
+
+    with open('/home/'+ id +'/Desktop/MP/text/text.txt', 'r') as file:
+        line = file.readline()
+
+    with open('/home/'+ id +'/Desktop/MP/text/text.txt', 'w') as file:
+        line = line.replace('  ', ' ')
+        line = line.replace('   ', ' ')
+        line = line.replace('    ', ' ')
+        line = line.replace('     ', ' ')
+        line = line.replace('  ', ' ')
+        file.write(line)
+
 
 def makePDF(font):
     with open('/home/'+id+'/Desktop/MP/text/text.txt','r', encoding = 'utf8') as txt:
@@ -175,8 +171,7 @@ if __name__ == "__main__":
         'Georgia' : 'Georgia'
         }
     
-    createTxt()
-    #getText()
+    getText()
     #makePDF(font)
     #kraken(font)
     #generateGT(font)
