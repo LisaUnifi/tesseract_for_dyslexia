@@ -10,7 +10,8 @@ from pdfminer.pdfpage import PDFPage
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LTTextBox, LTTextLine
 
-<<<<<<< HEAD
+id = 'lisa'
+
 def createTxt():
     pdffileobj = open('/home/' + id + '/Desktop/MP/text/TheultimateHitchhikersGuide.pdf','rb')
     pdfreader = PyPDF2.PdfFileReader(pdffileobj)
@@ -28,10 +29,6 @@ def createTxt():
     #put "\\your_txtfilename"
     file1 = open('/home/' + id + '/Desktop/MP/text/1.txt',"a")
     file1.writelines(text)
-
-=======
-id = 'lisa'
->>>>>>> main
 
 #Get a text and remove "end of line" character
 def getText():
