@@ -1,11 +1,15 @@
 import subprocess, os
 
 id = 'lisa'
+hdd = '/media/' + id + '/Lisa/MP/'
+local = '/home/' + id + '/Desktop/MP/'
 
 #OCR read distortion with different parameters for each font and create a .txt file
 def evaluate(font, distortion):
-    pin = os.path.join('/home/'+id+'/Desktop/MP/distorsion', distortion)
-    path = '/home/'+id+'/Desktop/MP/distorsion/results'
+    pin = os.path.join(hdd + 'evaluate', distortion)
+    path = os.path.join(hdd + 'evaluate', 'results')
+    if not os.path.isdir(path):
+        os.mkdir(path)
     for f in font:
         pdir = os.path.join(pin, f)
         pout = os.path.join(path, f)
@@ -27,8 +31,10 @@ def evaluate(font, distortion):
                         print('Exit-code not 0, check result!')
 
 def evaluateNoDist(font):
-    pin = '/home/'+id+'/Desktop/MP/distorsion/data'
-    path = '/home/'+id+'/Desktop/MP/distorsion/normal'
+    pin = hdd + 'evaluate/data'
+    path = os.path.join(hdd + 'evaluate', 'normal')
+    if not os.path.isdir(path):
+        os.mkdir(path)
     for f in font:
         pdir = os.path.join(pin, f)
         pout = os.path.join(path, f)
@@ -62,13 +68,13 @@ if __name__ == "__main__":
     #font usati 
     font = {
         'OpenDyslexic' : 'opd', 
-        'Nisaba' : 'nsb',
+        'Sylexiad Sans Medium' : 'slx',
         'LexieReadable' : 'lxr',
         'Arial' : 'ari',
         'Tahoma' : 'thm',
         'Verdana' : 'vrd',
         'ComicSansMs' : 'csm',
-        'Baskervville' : 'bkv',
+        'Baskervville' : 'bsk',
         'TimesNewRoman' : 'tnr',
         'Georgia' : 'grg'
         }
@@ -78,7 +84,7 @@ if __name__ == "__main__":
     for d in distortion:
         evaluate(font, d)
 
-    path = '/home/'+id+'/Desktop/MP/distorsion/results'
+    path = hdd + 'evaluate/results'
     for fold in os.listdir(path):
         path2 = os.path.join(path,fold)
         for fold2 in os.listdir(path2):
@@ -89,7 +95,7 @@ if __name__ == "__main__":
 
     evaluateNoDist(font)
 
-    path = '/home/'+id+'/Desktop/MP/distorsion/normal'
+    path = hdd + 'evaluate/normal'
     for fold in os.listdir(path):
         path2 = os.path.join(path,fold)
         eraseLS(path2)

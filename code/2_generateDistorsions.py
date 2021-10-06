@@ -11,47 +11,78 @@ import json
 import cv2 #OpenCV
 
 id = 'lisa'
+hdd = '/media/' + id + '/Lisa/MP/'
+local = '/home/' + id + '/Desktop/MP/'
+
+
+def getText():
+    with open(hdd + 'text/evaluate-spazi.txt', 'r') as fin, open(hdd + 'text/evaluate.txt', 'w+') as fout:
+        lines = fin.readlines()
+        cleaned = [' '.join(line.strip().split()) for line in lines]
+        joined = ' '.join(cleaned)
+        fout.write(joined)
+
+    with open(hdd + 'text/evaluate.txt', 'r') as file:
+        line = file.readline()
+
+    with open(hdd + 'text/evaluate.txt', 'w') as file:
+        line = line.replace('  ', ' ')
+        line = line.replace('   ', ' ')
+        line = line.replace('    ', ' ')
+        line = line.replace('     ', ' ')
+        line = line.replace('  ', ' ')
+        line = line.replace('--', '-')
+        line = line.replace('-­‐', '-') 
+        line = line.replace(" ʹ ", " ")
+        file.write(line)
 
 def generatePDF(font):
+    with open(hdd + 'text/evaluate.txt','r', encoding = 'utf8') as txt:
+        data = txt.read()
+    
+    pdir = os.path.join(hdd, 'evaluate')
+    if not os.path.isdir(pdir):
+        os.mkdir(pdir)
+
     #generate fontcreator.tex 
-    with open('/home/'+id+'/Desktop/MP/distorsion/font/fontcreator.tex','w', encoding = 'utf8') as file:
+    with open(hdd + 'evaluate/font/fontcreator.tex','w', encoding = 'utf8') as file:
         file.write('\\documentclass{report}\n')
-        file.write('\\usepackage[english]{babel}\n')
-        file.write('\\usepackage{blindtext}\n')
-        file.write('\\usepackage{lipsum}\n')
         file.write('\\usepackage{fontspec}\n')
         file.write('\\usepackage[margin=0.5in]{geometry}\n')
         file.write('\\setmainfont{var}\n')
         file.write('\\renewcommand{\\baselinestretch}{1.8}\n')
         file.write('\n')
         file.write('\\begin{document}\n')
-        file.write('\\lipsum')
-        file.write('\n')
+        file.write('\\pagestyle{empty}\n')
+        file.write(data + '\n')
         file.write('\\end{document}\n')
 
     #generate .tex with selected font
     for f in font:    
-        with open('/home/'+id+'/Desktop/MP/distorsion/font/fontcreator.tex','r') as myfile:
+        with open(hdd + 'evaluate/font/fontcreator.tex','r') as myfile:
             text = myfile.read()
             text_new = text.replace('var', f)
 
-        with open('/home/'+id+'/Desktop/MP/distorsion/font/font_'+ font[f] +'.tex', 'w') as output:
+        with open(hdd + 'evaluate/font/font_'+ font[f] +'.tex', 'w') as output:
             output.write(text_new)
 
     #generete .pdf with selected font
     for f in font:  
-        x = subprocess.call('lualatex --output-directory=/home/'+id+'/Desktop/MP/distorsion/font /home/'+id+'/Desktop/MP/distorsion/font/font_'+ font[f] +'.tex', shell =True)
+        x = subprocess.call('buf_size=2000000000 lualatex --output-directory=' + hdd + 'evaluate/font ' + hdd + 'evaluate/font/font_'+ font[f] +'.tex', shell =True)
         if x != 0:
             print('Exit-code not 0, check result!')
 
 def binarizationAndSegmentation(font):
-    path = '/home/'+id+'/Desktop/MP/distorsion/image/'
+    pdir = os.path.join(hdd + 'evaluate', 'image')
+    if not os.path.isdir(pdir):
+        os.mkdir(pdir)
+    path = hdd + 'evaluate/image/'
     for f in font:
         directory = font[f]
         pdir = os.path.join(path, directory)
         if not os.path.isdir(pdir):
             os.mkdir(pdir)
-        image = convert_from_path('/home/'+id+'/Desktop/MP/distorsion/font/font_'+ font[f] +'.pdf') 
+        image = convert_from_path(hdd + 'evaluate/font/font_'+ font[f] +'.pdf') 
         count = 1
         for i in image:
             i.save(pdir + '/font_'+ font[f] + str(count) + '.tif')
@@ -61,7 +92,10 @@ def binarizationAndSegmentation(font):
         pdir = os.path.join(path, dir)
         for d in os.listdir(pdir):
 
-            x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize', shell = True)
+            if font[f] == 'Sylexiad' or font[f] == 'TimesNewRoman':
+                x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.90', shell = True)
+            else:
+                x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.75', shell = True)
             if x != 0:
                 print('Exit-code not 0, check result!')
                 
@@ -70,7 +104,10 @@ def binarizationAndSegmentation(font):
             if y != 0:
                 print('Exit-code not 0, check result!')
 
-    path2 = '/home/'+id+'/Desktop/MP/distorsion/data/'
+    pdir = os.path.join(hdd + 'evaluate', 'data')
+    if not os.path.isdir(pdir):
+        os.mkdir(pdir)
+    path2 = hdd + 'evaluate/data/'
     for f in font:
         directory = font[f]
         pdir = os.path.join(path2, directory)
@@ -97,17 +134,20 @@ def binarizationAndSegmentation(font):
                         region.save(name)
                         count = count + 1
         
-def generateGT(font):        
+def generateGT(font):  
+    pdir = os.path.join(hdd + 'evaluate', 'gt')
+    if not os.path.isdir(pdir):
+        os.mkdir(pdir)      
     for f in font:
-        document = open('/home/'+id+'/Desktop/MP/distorsion/font/font_'+ font[f] +'.pdf','rb')
+        document = open(hdd + 'evaluate/font/font_'+ font[f] +'.pdf','rb')
         rsrcmgr = PDFResourceManager()
         # Set parameters for analysis.
-        laparams = LAParams()
+        laparams = LAParams(char_margin=3.5)
         # Create a PDF page aggregator object.
         device = PDFPageAggregator(rsrcmgr, laparams=laparams)
         interpreter = PDFPageInterpreter(rsrcmgr, device)
 
-        path = '/home/'+id+'/Desktop/MP/distorsion/gt/'
+        path = hdd + 'evaluate/gt/'
         directory = font[f]
         pdir = os.path.join(path, directory)
         os.mkdir(pdir)
@@ -123,7 +163,6 @@ def generateGT(font):
                     for el in element:
                         if isinstance(el, LTTextLine):
                             line.append(el.get_text())
-            line.pop()
 
             for l in range(len(line)): 
                 with open(pdir + '/font_'+ font[f] + str(count) + '_seg' + str(l) + '.gt.txt', 'w', encoding = 'utf8') as file:
@@ -132,8 +171,11 @@ def generateGT(font):
             count = count + 1
 
 def blurred(font, parameter):
-    pdata = '/home/'+id+'/Desktop/MP/distorsion/data/'
-    pblur = '/home/'+id+'/Desktop/MP/distorsion/blurring/'
+    pdir = os.path.join(hdd + 'evaluate', 'blurring')
+    if not os.path.isdir(pdir):
+        os.mkdir(pdir)
+    pdata = hdd + 'evaluate/data/'
+    pblur = hdd + 'evaluate/blurring/'
     for f in font:
         directory = font[f]
         pdir = os.path.join(pdata, directory)
@@ -150,8 +192,11 @@ def blurred(font, parameter):
             cv2.imwrite(pout + '/' + name + '.tif', blurred)
         
 def superimposition(font, parameter):  
-    pdata = '/home/'+id+'/Desktop/MP/distorsion/data/'
-    psup = '/home/'+id+'/Desktop/MP/distorsion/superimposition/'
+    pdir = os.path.join(hdd + 'evaluate', 'superimposition')
+    if not os.path.isdir(pdir):
+        os.mkdir(pdir)
+    pdata = hdd + 'evaluate/data/'
+    psup = hdd + 'evaluate/superimposition/'
     for f in font:
         directory = font[f]
         pdir = os.path.join(pdata, directory)
@@ -218,8 +263,11 @@ def makeSlant(img, sl):
         return s
 
 def slant(font, parameter):
-    pdata = '/home/'+id+'/Desktop/MP/distorsion/data/'
-    pslant = '/home/'+id+'/Desktop/MP/distorsion/slant'
+    pdir = os.path.join(hdd + 'evaluate', 'slant')
+    if not os.path.isdir(pdir):
+        os.mkdir(pdir)
+    pdata = hdd + 'evaluate/data/'
+    pslant = hdd + 'evaluate/slant'
     for f in font:
         directory = font[f]
         pdir = os.path.join(pdata, directory)
@@ -237,7 +285,7 @@ def slant(font, parameter):
 
 def renameGT(font):
     for f in font: 
-        path = os.path.join('/home/'+id+'/Desktop/MP/distorsion/gt', font[f])
+        path = os.path.join(hdd + 'evaluate/gt', font[f])
         for file in os.listdir(path):
             old = os.path.join(path, file)
             new = old.replace('.gt.txt', '.txt')
@@ -249,7 +297,7 @@ if __name__ == "__main__":
     #font usati 
     font = {
         'Open Dyslexic' : 'OpenDyslexic', 
-        'Nisaba' : 'Nisaba',
+        'Sylexiad Sans Medium' : 'Sylexiad',
         'Lexie Readable' : 'LexieReadable',
         'Arial' : 'Arial',
         'Tahoma' : 'Tahoma',
@@ -260,6 +308,7 @@ if __name__ == "__main__":
         'Georgia' : 'Georgia'
         }
 
+    getText()
     generatePDF(font)
     binarizationAndSegmentation(font)
     generateGT(font)

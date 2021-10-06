@@ -10,33 +10,38 @@ from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LTTextBox, LTTextLine
 
 id = 'lisa'
+hdd = '/media/' + id + '/Lisa/MP/'
+local = '/home/' + id + '/Desktop/MP/'
 
 #Get a text and remove "end of line" character
 def getText():
-    with open('/home/'+ id +'/Desktop/MP/text/text-spazi.txt', 'r') as fin, open('/home/lisa/Desktop/MP/text/text.txt', 'w+') as fout:
+    with open(hdd + 'text/text-spazi.txt', 'r') as fin, open(hdd + 'text/text.txt', 'w+') as fout:
         lines = fin.readlines()
         cleaned = [' '.join(line.strip().split()) for line in lines]
         joined = ' '.join(cleaned)
         fout.write(joined)
 
-    with open('/home/'+ id +'/Desktop/MP/text/text.txt', 'r') as file:
+    with open(hdd + 'text/text.txt', 'r') as file:
         line = file.readline()
 
-    with open('/home/'+ id +'/Desktop/MP/text/text.txt', 'w') as file:
+    with open(hdd + 'text/text.txt', 'w') as file:
         line = line.replace('  ', ' ')
         line = line.replace('   ', ' ')
         line = line.replace('    ', ' ')
         line = line.replace('     ', ' ')
         line = line.replace('  ', ' ')
+        line = line.replace('--', '-')
+        line = line.replace('-­‐', '-') 
+        line = line.replace(" ʹ ", " ")
         file.write(line)
 
 
 def makePDF(font):
-    with open('/home/'+id+'/Desktop/MP/text/text.txt','r', encoding = 'utf8') as txt:
+    with open(hdd + 'text/text.txt','r', encoding = 'utf8') as txt:
         data = txt.read()
 
     #Use "fontspec" to generate file with differnt fonts
-    with open('/home/'+id+'/Desktop/MP/font/fontcreator.tex','w', encoding = 'utf8') as file:
+    with open(hdd + 'font/fontcreator.tex','w', encoding = 'utf8') as file:
         file.write('\\documentclass{report}\n')
         file.write('\\usepackage{fontspec}\n')
         file.write('\\usepackage[margin=0.5in]{geometry}\n')
@@ -49,28 +54,28 @@ def makePDF(font):
         file.write('\\end{document}\n')
 
     for f in font:    
-        with open('/home/'+id+'/Desktop/MP/font/fontcreator.tex','r') as myfile:
+        with open(hdd + 'font/fontcreator.tex','r') as myfile:
             text = myfile.read()
             text_new = text.replace('var', f)
 
-        with open('/home/'+id+'/Desktop/MP/font/font_'+ font[f] +'.tex', 'w') as output:
+        with open(hdd + 'font/font_'+ font[f] +'.tex', 'w') as output:
             output.write(text_new)
 
     for f in font:  
-        x = subprocess.call('buf_size=2000000000 lualatex --output-directory=/home/'+id+'/Desktop/MP/font/ /home/'+id+'/Desktop/MP/font/font_'+ font[f] +'.tex', shell = True)
+        x = subprocess.call('buf_size=2000000000 lualatex --output-directory=' + hdd + 'font/ ' + hdd + 'font/font_'+ font[f] +'.tex', shell = True)
         if x != 0:
             print('Exit-code not 0, check result!')
 
 #Create single line text images
 def kraken(font):
-    path = '/home/'+id+'/Desktop/MP/image/'
+    path = hdd + 'image/'
 
     #convertire pdf in tif
     for f in font:
         directory = font[f]
         pdir = os.path.join(path, directory)
         os.mkdir(pdir)
-        image = convert_from_path('/home/'+id+'/Desktop/MP/font/font_'+ font[f] +'.pdf') 
+        image = convert_from_path(hdd + 'font/font_'+ font[f] +'.pdf') 
         count = 1
         for i in image:
             i.save(pdir + '/font_'+ font[f] + str(count) + '.tif')
@@ -81,7 +86,7 @@ def kraken(font):
         pdir = os.path.join(path, dir)
         for d in os.listdir(pdir):
 
-            if font[f] == 'Sylexiad':
+            if font[f] == 'Sylexiad' or font[f] == 'TimesNewRoman':
                 x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.90', shell = True)
             else:
                 x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.75', shell = True)
@@ -94,7 +99,7 @@ def kraken(font):
                 print('Exit-code not 0, check result!')
 
     #divisione in segmenti
-    path2 = '/home/'+id+'/Desktop/MP/data/'
+    path2 = hdd + 'data/'
     for f in font:
         directory = font[f]
         pdir = os.path.join(path2, directory)
@@ -123,15 +128,15 @@ def kraken(font):
 #Generate ground truth from PDFs 
 def generateGT(font):
     for f in font:
-        document = open('/home/'+id+'/Desktop/MP/font/font_'+ font[f] +'.pdf','rb')
+        document = open(hdd + 'font/font_'+ font[f] +'.pdf','rb')
         rsrcmgr = PDFResourceManager()
         # Set parameters for analysis.
-        laparams = LAParams(char_margin=3.0)
+        laparams = LAParams(char_margin=3.5)
         # Create a PDF page aggregator object.
         device = PDFPageAggregator(rsrcmgr, laparams=laparams)
         interpreter = PDFPageInterpreter(rsrcmgr, device)
 
-        path = '/home/'+id+'/Desktop/MP/gt/'
+        path = hdd + 'gt/'
         directory = font[f]
         pdir = os.path.join(path, directory)
         os.mkdir(pdir)
@@ -159,10 +164,19 @@ def generateGT(font):
 if __name__ == "__main__":
     #font usati 
     font = {
-        'Sylexiad Sans Medium' : 'Sylexiad'
+        'Open Dyslexic' : 'OpenDyslexic', 
+        'Sylexiad Sans Medium' : 'Sylexiad',
+        'Lexie Readable' : 'LexieReadable',
+        'Arial' : 'Arial',
+        'Tahoma' : 'Tahoma',
+        'Verdana' : 'Verdana',
+        'Comic Sans Ms' : 'ComicSansMs',
+        'Baskervville' : 'Baskervville',
+        'Times New Roman' : 'TimesNewRoman',
+        'Georgia' : 'Georgia'
         }
     
-    getText()
-    makePDF(font)
+    #getText()
+    #makePDF(font)
     kraken(font)
     generateGT(font)
