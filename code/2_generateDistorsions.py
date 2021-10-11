@@ -37,6 +37,9 @@ def getText():
         file.write(line)
 
 def generatePDF(font):
+    path = os.path.join(hdd + 'evaluate', 'font')
+    if not os.path.isdir(path):
+        os.mkdir(path)
     with open(hdd + 'text/evaluate.txt','r', encoding = 'utf8') as txt:
         data = txt.read()
     
@@ -92,8 +95,10 @@ def binarizationAndSegmentation(font):
         pdir = os.path.join(path, dir)
         for d in os.listdir(pdir):
 
-            if font[f] == 'Sylexiad' or font[f] == 'TimesNewRoman':
-                x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.90', shell = True)
+            if font[f] == 'Sylexiad':
+                x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.85', shell = True)
+            elif font[f] == 'TimesNewRoman':
+                x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.708', shell = True)
             else:
                 x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.75', shell = True)
             if x != 0:
@@ -247,11 +252,15 @@ def superimposition(font, parameter):
             newBg.paste(fg, (0,0), mask = fg) #starting at coordinate = (0,0)
             
             newBg.save(pout + '/' + name + '.tif', 'TIFF')
+        '''
+        print(background)
+        print(foreground)
         try: 
             shutil.rmtree(background)
             shutil.rmtree(foreground)
         except OSError as e:
             print('Errore!')
+        '''
 
 def add_border(img, width):
         new = Image.new('RGB', (img.width + 2*width, img.height),(255,255,255))
@@ -308,10 +317,10 @@ if __name__ == "__main__":
         'Georgia' : 'Georgia'
         }
 
-    getText()
-    generatePDF(font)
-    binarizationAndSegmentation(font)
-    generateGT(font)
+    #getText()
+    #generatePDF(font)
+    #binarizationAndSegmentation(font)
+    #generateGT(font)
 
     blurCoef = [3, 5, 7]
     for b in blurCoef:

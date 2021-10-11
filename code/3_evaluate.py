@@ -68,10 +68,10 @@ if __name__ == "__main__":
     #font usati 
     font = {
         'OpenDyslexic' : 'opd', 
-        'Sylexiad Sans Medium' : 'slx',
+        'Sylexiad' : 'slx',
         'LexieReadable' : 'lxr',
         'Arial' : 'ari',
-        'Tahoma' : 'thm',
+        'Tahoma' : 'tha',
         'Verdana' : 'vrd',
         'ComicSansMs' : 'csm',
         'Baskervville' : 'bsk',

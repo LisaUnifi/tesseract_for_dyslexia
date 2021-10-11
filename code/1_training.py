@@ -86,8 +86,10 @@ def kraken(font):
         pdir = os.path.join(path, dir)
         for d in os.listdir(pdir):
 
-            if font[f] == 'Sylexiad' or font[f] == 'TimesNewRoman':
-                x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.90', shell = True)
+            if font[f] == 'Sylexiad':
+                x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.85', shell = True)
+            elif font[f] == 'TimesNewRoman':
+                x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.708', shell = True)
             else:
                 x = subprocess.call('kraken -i ' + pdir + '/' + d + ' ' + pdir + '/bw_'+ d + ' binarize --threshold=0.75', shell = True)
             if x != 0:
@@ -179,4 +181,4 @@ if __name__ == "__main__":
     #getText()
     #makePDF(font)
     kraken(font)
-    generateGT(font)
+    #generateGT(font)
