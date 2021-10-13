@@ -4,9 +4,9 @@ import jellyfish
 import numpy as np
 import matplotlib.pyplot as plt 
 
-id = 'lisa'
-hdd = '/media/' + id + '/Lisa/MP/'
-local = '/home/' + id + '/Desktop/MP/'
+id = 'lorenzo'
+#hdd = '/media/' + id + '/Lisa/MP/'
+hdd = '/home/' + id + '/Desktop/MP/'
 
 def distance(str1, str2):
     d = jellyfish.levenshtein_distance(str1, str2)
@@ -87,6 +87,50 @@ def noDistEval(font):
         fileWriter.writerow([str(font), 'normal', 0, count, mean])
         cfile.close()
 
+def meanOfMeans(category, distortion):
+    path = hdd + 'evaluate/results'
+    with open(path + '/meanOfMeans.csv', mode = 'w+') as cfile:
+        fileWriter = csv.writer(cfile, delimiter = ',')
+        fileWriter.writerow(['CATEGORY', 'DISTORTION', 'PARAMETER', 'VALUE'])
+        cfile.close()
+    
+    for d in distortion:
+        for p in distortion[d]:
+            for c in category:
+                mean = 0 
+                count = len(category[c])
+                for f in category[c]:
+                    pathc = os.path.join(path,f)
+                    with open(pathc + '/mean.csv', mode='r') as file:
+                        fileReader = csv.reader(file, delimiter=',')
+                        for row in fileReader:
+                            if row[1] == d and row[2]==str(p):
+                                mean = mean + float(row[4])
+                mean = mean / count
+                with open(path + '/meanOfMeans.csv', mode = 'a') as cfile:
+                    fileWriter = csv.writer(cfile, delimiter = ',')
+                    fileWriter.writerow([c, d, p, mean])
+                    cfile.close()
+    
+    for c in category:
+        mean = 0 
+        count = len(category[c])
+        for f in category[c]:
+            pathc = os.path.join(path,f)
+            with open(pathc + '/mean.csv', mode='r') as file:
+                fileReader = csv.reader(file, delimiter=',')
+                for row in fileReader:
+                    if row[1] == 'normal' and row[2]=='0':
+                        mean = mean + float(row[4])
+        mean = mean / count
+        with open(path + '/meanOfMeans.csv', mode = 'a') as cfile:
+            fileWriter = csv.writer(cfile, delimiter = ',')
+            fileWriter.writerow([c, 'normal', '0', mean])
+            cfile.close()
+
+
+
+
 def barAverages(font, distortion):
     path = hdd + 'evaluate/results'
     data = {}
@@ -126,6 +170,46 @@ def barAverages(font, distortion):
     plt.title(distortion)
 
     plt.savefig(path + '/' + distortion + '.png')
+
+
+def barCategory(category, distortion):
+    path = hdd + 'evaluate/results'
+    data = {}
+    listcat = []
+    listpar = []
+    for c in category:
+        listcat.append(c)
+        with open(path + '/meanOfMeans.csv', mode = 'r') as cfile:
+            fileReader = csv.reader(cfile, delimiter = ',')
+            for row in fileReader:
+                if (row[1] == distortion or row[1] == 'normal') and row[0] == c:
+                    mean = round(float(row[3]), 2)
+                    data[(c, row[2])] = mean
+                    if row[2] not in listpar:
+                        listpar.append(row[2])
+
+    value = []
+    listpar.sort()
+    listcat.sort()
+    for p in listpar:
+        tmp = []
+        for f in listcat:
+            tmp.append(data[(f, p)])
+        value.append(tmp)
+    
+    X = np.arange(len(listcat))
+    plt.figure(figsize =(12, 12))
+    plt.grid(axis = 'y')
+    coef = 1/(len(listpar) + 1)
+    for i in range(len(listpar)):
+        plt.bar(X + (coef*i), value[i], width = coef)
+    plt.ylabel('Mean')
+    plt.xticks(X, listcat)
+    plt.xticks(rotation='vertical')
+    plt.legend(labels = listpar)
+    plt.title(distortion)
+
+    plt.savefig(path + '/' + distortion + '.png')
                                 
 
 if __name__ == "__main__":
@@ -143,11 +227,33 @@ if __name__ == "__main__":
         'Georgia' : 'Georgia'
         }
 
+    category = {
+        'Dyslexic' : ['LexieReadable', 'OpenDyslexic', 'Sylexiad'],
+        'SansSerif' :  ['Arial', 'ComicSansMs', 'Tahoma', 'Verdana'],
+        'Serif' : ['Baskervville', 'Georgia', 'TimesNewRoman']
+        }
+    
+    distortion = {
+        'blurring' : [3, 5, 7],
+        'slant' : [0.1, 0.25, 0.4],
+        'superimposition' : [1, 2, 3]
+    }
+
+    
+    
     for f in font:
         comparison(font[f])
         noDistEval(font[f])
+    
 
+    '''
     distortion = ['blurring', 'slant', 'superimposition']
     
     for d in distortion:
         barAverages(font, d)
+    '''
+
+    meanOfMeans(category, distortion)
+
+    for d in distortion:
+        barCategory(category, d)
