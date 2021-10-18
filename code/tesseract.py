@@ -52,7 +52,7 @@ if __name__ == "__main__":
     
     #moveData(font)
 
-    with open('/media/' + id + '/Lisa/MP/training/trainingTime.txt', 'w') as time:
+    with open('/media/' + id + '/Lisa/MP/training/trainingTime.txt', 'w+') as time:
         now = datetime.now()
         print(now.strftime("%d/%m/%Y, %H:%M:%S"))
 

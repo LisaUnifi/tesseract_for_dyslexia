@@ -4,9 +4,9 @@ import jellyfish
 import numpy as np
 import matplotlib.pyplot as plt 
 
-id = 'lorenzo'
-#hdd = '/media/' + id + '/Lisa/MP/'
-hdd = '/home/' + id + '/Desktop/MP/'
+id = 'lisa'
+hdd = '/media/' + id + '/Lisa/MP/'
+local = '/home/' + id + '/Desktop/MP/'
 
 def distance(str1, str2):
     d = jellyfish.levenshtein_distance(str1, str2)
@@ -116,11 +116,11 @@ def meanOfMeans(category, distortion):
         mean = 0 
         count = len(category[c])
         for f in category[c]:
-            pathc = os.path.join(path,f)
+            pathc = os.path.join(path, f)
             with open(pathc + '/mean.csv', mode='r') as file:
                 fileReader = csv.reader(file, delimiter=',')
                 for row in fileReader:
-                    if row[1] == 'normal' and row[2]=='0':
+                    if row[1] == 'normal' and row[2] == '0':
                         mean = mean + float(row[4])
         mean = mean / count
         with open(path + '/meanOfMeans.csv', mode = 'a') as cfile:
@@ -164,12 +164,58 @@ def barAverages(font, distortion):
     for i in range(len(listpar)):
         plt.bar(X + (coef*i), value[i], width = coef)
     plt.ylabel('Mean')
+    plt.ylim([0, 140])
     plt.xticks(X, listfont)
     plt.xticks(rotation='vertical')
-    plt.legend(labels = listpar)
-    plt.title(distortion)
+    plt.legend(labels = listpar, title = 'Distortion parameter')
+    name = distortion.capitalize()
+    plt.title(name + ' distortion in all fonts')
 
-    plt.savefig(path + '/' + distortion + '.png')
+    plt.savefig(path + '/font_' + distortion + '.png')
+
+
+def barSubCategory(category, distortion):
+    path = hdd + 'evaluate/results'
+    for c in category:
+        data = {}
+        listfont = []
+        listpar = []
+        for f in category[c]:
+            listfont.append(f)
+            dir = os.path.join(path, f)
+            with open(dir + '/mean.csv', mode = 'r') as cfile:
+                fileReader = csv.reader(cfile, delimiter = ',')
+                for row in fileReader:
+                    if row[1] == distortion or row[1] == 'normal':
+                        mean = round(float(row[4]), 2)
+                        data[(f, row[2])] = mean
+                        if row[2] not in listpar:
+                            listpar.append(row[2])
+
+        value = []
+        listpar.sort()
+        listfont.sort()
+        for p in listpar:
+            tmp = []
+            for f in listfont:
+                tmp.append(data[(f, p)])
+            value.append(tmp)
+        
+        X = np.arange(len(listfont))
+        plt.figure(figsize =(12, 12))
+        plt.grid(axis = 'y')
+        coef = 1/(len(listpar) + 1)
+        for i in range(len(listpar)):
+            plt.bar(X + (coef*i), value[i], width = coef)
+        plt.ylabel('Mean')
+        plt.ylim([0, 140])
+        plt.xticks(X, listfont)
+        plt.xticks(rotation='vertical')
+        plt.legend(labels = listpar, title = 'Distortion parameter')
+        name = distortion.capitalize()
+        plt.title(name + ' distortion in ' + c + ' fonts')
+
+        plt.savefig(path + '/' + c + '_' + distortion + '.png')
 
 
 def barCategory(category, distortion):
@@ -204,10 +250,12 @@ def barCategory(category, distortion):
     for i in range(len(listpar)):
         plt.bar(X + (coef*i), value[i], width = coef)
     plt.ylabel('Mean')
+    plt.ylim([0, 140])
     plt.xticks(X, listcat)
     plt.xticks(rotation='vertical')
-    plt.legend(labels = listpar)
-    plt.title(distortion)
+    plt.legend(labels = listpar, title = 'Distortion parameter')
+    name = distortion.capitalize()
+    plt.title(name + ' distortion for each category')
 
     plt.savefig(path + '/' + distortion + '.png')
                                 
@@ -238,22 +286,20 @@ if __name__ == "__main__":
         'slant' : [0.1, 0.25, 0.4],
         'superimposition' : [1, 2, 3]
     }
-
-    
-    
+    '''
     for f in font:
         comparison(font[f])
         noDistEval(font[f])
     
-
-    '''
-    distortion = ['blurring', 'slant', 'superimposition']
-    
-    for d in distortion:
-        barAverages(font, d)
-    '''
-
     meanOfMeans(category, distortion)
+    '''
 
     for d in distortion:
         barCategory(category, d)
+
+    dist = ['blurring', 'slant', 'superimposition']
+    
+    for d in dist:
+        barAverages(font, d)
+        barSubCategory(category, d)
+    
