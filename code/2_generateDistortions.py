@@ -252,15 +252,6 @@ def superimposition(font, parameter):
             newBg.paste(fg, (0,0), mask = fg) #starting at coordinate = (0,0)
             
             newBg.save(pout + '/' + name + '.tif', 'TIFF')
-        '''
-        print(background)
-        print(foreground)
-        try: 
-            shutil.rmtree(background)
-            shutil.rmtree(foreground)
-        except OSError as e:
-            print('Errore!')
-        '''
 
 def add_border(img, width):
         new = Image.new('RGB', (img.width + 2*width, img.height),(255,255,255))
@@ -317,10 +308,10 @@ if __name__ == "__main__":
         'Georgia' : 'Georgia'
         }
 
-    #getText()
-    #generatePDF(font)
-    #binarizationAndSegmentation(font)
-    #generateGT(font)
+    getText()
+    generatePDF(font)
+    binarizationAndSegmentation(font)
+    generateGT(font)
 
     blurCoef = [3, 5, 7]
     for b in blurCoef:

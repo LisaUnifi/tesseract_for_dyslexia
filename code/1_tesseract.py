@@ -66,4 +66,4 @@ if __name__ == "__main__":
 
     #clean(font)
 
-    #sudo cp /home/lisa/Desktop/MP/tesstrain-main/usr/share/tessdata/vrd.traineddata /usr/local/share/tessdata
+    

@@ -163,13 +163,14 @@ def barAverages(font, distortion):
     coef = 1/(len(listpar) + 1)
     for i in range(len(listpar)):
         plt.bar(X + (coef*i), value[i], width = coef)
-    plt.ylabel('Mean')
+    plt.ylabel('Mean', fontsize = 20)
     plt.ylim([0, 140])
     plt.xticks(X, listfont)
-    plt.xticks(rotation='vertical')
-    plt.legend(labels = listpar, title = 'Distortion parameter')
+    plt.xticks(rotation = 80)
+    plt.yticks(fontsize = 20)
+    plt.legend(labels = listpar, title = 'Distortion parameter', title_fontsize = 20, fontsize = 20)
     name = distortion.capitalize()
-    plt.title(name + ' distortion in all fonts')
+    plt.title(name + ' distortion for all typefaces', fontsize = 24)
 
     plt.savefig(path + '/font_' + distortion + '.png')
 
@@ -207,13 +208,13 @@ def barSubCategory(category, distortion):
         coef = 1/(len(listpar) + 1)
         for i in range(len(listpar)):
             plt.bar(X + (coef*i), value[i], width = coef)
-        plt.ylabel('Mean')
+        plt.ylabel('Mean', fontsize = 20)
         plt.ylim([0, 140])
-        plt.xticks(X, listfont)
-        plt.xticks(rotation='vertical')
-        plt.legend(labels = listpar, title = 'Distortion parameter')
+        plt.xticks(X + 0.30, listfont, fontsize = 20)
+        plt.yticks(fontsize = 20)
+        plt.legend(labels = listpar, title = 'Distortion parameter', title_fontsize = 20, fontsize = 20)
         name = distortion.capitalize()
-        plt.title(name + ' distortion in ' + c + ' fonts')
+        plt.title(name + ' distortion for ' + c + ' typefaces', fontsize = 24)
 
         plt.savefig(path + '/' + c + '_' + distortion + '.png')
 
@@ -249,13 +250,13 @@ def barCategory(category, distortion):
     coef = 1/(len(listpar) + 1)
     for i in range(len(listpar)):
         plt.bar(X + (coef*i), value[i], width = coef)
-    plt.ylabel('Mean')
+    plt.ylabel('Mean', fontsize = 20)
     plt.ylim([0, 140])
-    plt.xticks(X, listcat)
-    plt.xticks(rotation='vertical')
-    plt.legend(labels = listpar, title = 'Distortion parameter')
+    plt.xticks(X + 0.30, listcat, fontsize = 20)
+    plt.yticks(fontsize = 20)
+    plt.legend(labels = listpar, title = 'Distortion parameter', title_fontsize = 20, fontsize = 20)
     name = distortion.capitalize()
-    plt.title(name + ' distortion for each category')
+    plt.title(name + ' distortion for each category', fontsize = 24)
 
     plt.savefig(path + '/' + distortion + '.png')
                                 
@@ -286,13 +287,12 @@ if __name__ == "__main__":
         'slant' : [0.1, 0.25, 0.4],
         'superimposition' : [1, 2, 3]
     }
-    '''
+
     for f in font:
         comparison(font[f])
         noDistEval(font[f])
     
     meanOfMeans(category, distortion)
-    '''
 
     for d in distortion:
         barCategory(category, d)

@@ -178,7 +178,7 @@ if __name__ == "__main__":
         'Georgia' : 'Georgia'
         }
     
-    #getText()
-    #makePDF(font)
+    getText()
+    makePDF(font)
     kraken(font)
-    #generateGT(font)
+    generateGT(font)
